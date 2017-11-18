@@ -25,7 +25,16 @@ __all__ = ['ciphers']
 
 
 def create_cipher(alg, key, iv, op, key_as_bytes=0, d=None, salt=None,
-                  i=1, padding=1):
+                  i=1, padding=1):"创建密码"
+    "alg：算法名字"
+    "key：加密所用的密码"
+    "iv:初始向量"
+    "op:加密或者加密操作"
+    "key_as_bytes:生成密码方法选择"
+    "d:散列算法"
+    "salt:生成密码所用的参数"
+    "i:生成密码所用的迭代次数"
+    "padding:填充加密块"
     md5 = hashlib.md5()
     md5.update(key)
     md5.update(iv)
@@ -38,7 +47,7 @@ ciphers = {
 }
 
 
-def test():
+def test():"测试"
     from shadowsocks.crypto import util
 
     cipher = create_cipher('rc4-md5', b'k' * 32, b'i' * 16, 1)
