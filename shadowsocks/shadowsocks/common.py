@@ -343,6 +343,7 @@ def test_inet_conv():
 
 
 def test_parse_header():
+    # 测试是否可以
     assert parse_header(b'\x03\x0ewww.google.com\x00\x50') == \
         (3, b'www.google.com', 80, 18)
     assert parse_header(b'\x01\x08\x08\x08\x08\x00\x35') == \
