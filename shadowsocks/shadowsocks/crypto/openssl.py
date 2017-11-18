@@ -31,7 +31,7 @@ loaded = False
 buf_size = 2048
 
 
-def load_openssl():
+def load_openssl():"加载openssl"
     global loaded, libcrypto, buf
 
     libcrypto = util.find_library(('crypto', 'eay32'),
@@ -69,8 +69,12 @@ def load_cipher(cipher_name):
     return None
 
 
-class OpenSSLCrypto(object):
+class OpenSSLCrypto(object):"openssl加密类"
     def __init__(self, cipher_name, key, iv, op):
+    "cipher_name：算法名字"
+    "key：加密所用的密码"
+    "iv:初始向量"
+    "op:加密或者加密操作"
         self._ctx = None
         if not loaded:
             load_openssl()
@@ -91,7 +95,8 @@ class OpenSSLCrypto(object):
             self.clean()
             raise Exception('can not initialize cipher context')
 
-    def update(self, data):
+    def update(self, data):"添加加密数据"
+        "data:加密数据"
         global buf_size, buf
         cipher_out_len = c_long(0)
         l = len(data)
@@ -103,10 +108,10 @@ class OpenSSLCrypto(object):
         # buf is copied to a str object when we access buf.raw
         return buf.raw[:cipher_out_len.value]
 
-    def __del__(self):
+    def __del__(self):"析构函数"
         self.clean()
 
-    def clean(self):
+    def clean(self):"清除对象"
         if self._ctx:
             libcrypto.EVP_CIPHER_CTX_cleanup(self._ctx)
             libcrypto.EVP_CIPHER_CTX_free(self._ctx)
@@ -141,39 +146,39 @@ ciphers = {
 }
 
 
-def run_method(method):
-
+def run_method(method):"执行加密方法"
+"method:加密方法名称"
     cipher = OpenSSLCrypto(method, b'k' * 32, b'i' * 16, 1)
     decipher = OpenSSLCrypto(method, b'k' * 32, b'i' * 16, 0)
 
     util.run_cipher(cipher, decipher)
 
 
-def test_aes_128_cfb():
+def test_aes_128_cfb():"测试"
     run_method('aes-128-cfb')
 
 
-def test_aes_256_cfb():
+def test_aes_256_cfb():"测试"
     run_method('aes-256-cfb')
 
 
-def test_aes_128_cfb8():
+def test_aes_128_cfb8():"测试"
     run_method('aes-128-cfb8')
 
 
-def test_aes_256_ofb():
+def test_aes_256_ofb():"测试"
     run_method('aes-256-ofb')
 
 
-def test_aes_256_ctr():
+def test_aes_256_ctr():"测试"
     run_method('aes-256-ctr')
 
 
-def test_bf_cfb():
+def test_bf_cfb():"测试"
     run_method('bf-cfb')
 
 
-def test_rc4():
+def test_rc4():"测试"
     run_method('rc4')
 
 
