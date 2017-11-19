@@ -25,7 +25,7 @@ import logging
 from shadowsocks import common
 from shadowsocks.crypto import rc4_md5, openssl, sodium, table
 
-
+#支持的加密算法
 method_supported = {}
 method_supported.update(rc4_md5.ciphers)
 method_supported.update(openssl.ciphers)
@@ -34,6 +34,10 @@ method_supported.update(table.ciphers)
 
 
 def random_string(length):
+    """
+    随机生成n字节字符串，作为password
+    length：随机字符串的长度
+    """
     return os.urandom(length)
 
 
@@ -41,10 +45,21 @@ cached_keys = {}
 
 
 def try_cipher(key, method=None):
+    """
+    尝试加密
+    key：用于生成密钥的key
+    method;加密算法
+    """
     Encryptor(key, method)
 
 
 def EVP_BytesToKey(password, key_len, iv_len):
+    """
+    生成key和密钥初始化矢量iv
+    password：用于生成key和iv
+    key_len：key的规定长度
+    iv-len:iv的规定长度
+    """
     # equivalent to OpenSSL's EVP_BytesToKey() with count 1
     # so that we make the same key and iv as nodejs version
     cached_key = '%s-%d-%d' % (password, key_len, iv_len)
@@ -67,7 +82,7 @@ def EVP_BytesToKey(password, key_len, iv_len):
     cached_keys[cached_key] = (key, iv)
     return key, iv
 
-
+#加密器
 class Encryptor(object):
     def __init__(self, key, method):
         self.key = key
@@ -86,14 +101,28 @@ class Encryptor(object):
             sys.exit(1)
 
     def get_method_info(self, method):
+        """
+        获取加密算法的信息
+        method：加密算法
+        """
         method = method.lower()
         m = method_supported.get(method)
         return m
 
     def iv_len(self):
+        """
+        获得iv的长度
+        """
         return len(self.cipher_iv)
 
     def get_cipher(self, password, method, op, iv):
+         """ 
+         获得加密算法加密器，m[0]key的长度，m[1]iv的长度，m[2]加密算法
+         password:用于生成key和iv
+         method：加密算法
+         op：操作标识，1是加密，0是解密
+         iv：key初始化矢量
+         """
         password = common.to_bytes(password)
         m = self._method_info
         if m[0] > 0:
@@ -109,6 +138,10 @@ class Encryptor(object):
         return m[2](method, key, iv, op)
 
     def encrypt(self, buf):
+        """
+        加密
+        buf：需要加密数据
+        """
         if len(buf) == 0:
             return buf
         if self.iv_sent:
@@ -117,7 +150,11 @@ class Encryptor(object):
             self.iv_sent = True
             return self.cipher_iv + self.cipher.update(buf)
 
-    def decrypt(self, buf):
+    def decrypt(self, buf):、
+        """
+        解密
+        buf：需要解密数据
+        """
         if len(buf) == 0:
             return buf
         if self.decipher is None:
@@ -132,6 +169,13 @@ class Encryptor(object):
 
 
 def encrypt_all(password, method, op, data):
+    """
+    加密算法
+    method：加密算法
+    password:用于生成key
+    op：操作标识，op=1加密，op=0解密、
+    data:加密/解密数据
+    """
     result = []
     method = method.lower()
     (key_len, iv_len, m) = method_supported[method]
@@ -149,7 +193,7 @@ def encrypt_all(password, method, op, data):
     result.append(cipher.update(data))
     return b''.join(result)
 
-
+#所有加密算法
 CIPHERS_TO_TEST = [
     'aes-128-cfb',
     'aes-256-cfb',
@@ -161,6 +205,9 @@ CIPHERS_TO_TEST = [
 
 
 def test_encryptor():
+    """
+    测试所有加密器加密和解密
+    """
     from os import urandom
     plain = urandom(10240)
     for method in CIPHERS_TO_TEST:
@@ -173,6 +220,9 @@ def test_encryptor():
 
 
 def test_encrypt_all():
+    """
+    测试所有加密算法的加密和解密
+    """
     from os import urandom
     plain = urandom(10240)
     for method in CIPHERS_TO_TEST:
