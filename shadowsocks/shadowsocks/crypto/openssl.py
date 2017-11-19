@@ -58,7 +58,8 @@ def load_openssl():"加载openssl"
     loaded = True
 
 
-def load_cipher(cipher_name):
+def load_cipher(cipher_name):"加载密码算法"
+    "cipher_name:算法名称"
     func_name = 'EVP_' + cipher_name.replace('-', '_')
     if bytes != str:
         func_name = str(func_name, 'utf-8')
