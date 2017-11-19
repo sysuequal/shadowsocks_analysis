@@ -21,7 +21,8 @@ import os
 import logging
 
 
-def find_library_nt(name):
+def find_library_nt(name):"寻找库文件"
+    "name:库文件名"
     # modified from ctypes.util
     # ctypes.util.find_library just returns first result he found
     # but we want to try them all
@@ -39,7 +40,10 @@ def find_library_nt(name):
     return results
 
 
-def find_library(possible_lib_names, search_symbol, library_name):
+def find_library(possible_lib_names, search_symbol, library_name):"寻找库文件"
+    "possible_lib_names:可能的库文件名"
+    "search_symbol:系统盘标识"
+    "library_name:库文件"
     import ctypes.util
     from ctypes import CDLL
 
@@ -92,7 +96,9 @@ def find_library(possible_lib_names, search_symbol, library_name):
     return None
 
 
-def run_cipher(cipher, decipher):
+def run_cipher(cipher, decipher):"执行密码算法"
+    "cipher:加密对象"
+    "decipher:解密对象"
     from os import urandom
     import random
     import time
@@ -122,7 +128,7 @@ def run_cipher(cipher, decipher):
     assert b''.join(results) == plain
 
 
-def test_find_library():
+def test_find_library():"测试"
     assert find_library('c', 'strcpy', 'libc') is not None
     assert find_library(['c'], 'strcpy', 'libc') is not None
     assert find_library(('c',), 'strcpy', 'libc') is not None
