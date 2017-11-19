@@ -85,6 +85,11 @@ def EVP_BytesToKey(password, key_len, iv_len):
 #加密器
 class Encryptor(object):
     def __init__(self, key, method):
+        """
+        初始化加密器
+        key：密钥
+        method:加密算法
+        “”“
         self.key = key
         self.method = method
         self.iv = None
