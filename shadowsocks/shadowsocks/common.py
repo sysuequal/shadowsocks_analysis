@@ -57,11 +57,11 @@ chr = compat_chr
 
 def to_bytes(s):
     """
-    将字符串转为"utf-8"格式编码的字节码对象
+    将字符串转为"utf-8"格式编码的字节码对象。
 
-    :param s: 一个字符串
+    :param s: 一个字符串。
 
-    :return: 一个字节码对象
+    :return: 一个字节码对象。
     """
     if bytes != str: # 兼容python 2.x
         if type(s) == str:
@@ -71,11 +71,11 @@ def to_bytes(s):
 
 def to_str(s):
     """
-    将一个“utf-8”编码的字节码对象转为字符串
+    将一个“utf-8”编码的字节码对象转为字符串。
 
-    :param s:一个字节码对象
+    :param s: 一个字节码对象。
 
-    :return: 一个字符串
+    :return: 一个字符串。
     """
     if bytes != str:
         if type(s) == bytes:
@@ -85,13 +85,13 @@ def to_str(s):
 
 def inet_ntop(family, ipstr):
     """
-    将在网络传输中的ip字节码对象转成一个python中的字节码对象。网络传输中的ip字节码形式为b“\x00”,而python中的字节码形式为b“00”
+    将在网络传输中的ip字节码对象转成一个python中的字节码对象。网络传输中的ip字节码形式为b“\x00”,而python中的字节码形式为b“00”。
 
-    :param family: ip地址的类型，可选的参数有ipv4和ipv6
+    :param family: ip地址的类型，可选的参数有ipv4和ipv6。
 
-    :param ipstr: 在网络传输中的ip字节码对象
+    :param ipstr: 在网络传输中的ip字节码对象。
 
-    :return: ip在python中的字节码对象
+    :return: ip在python中的字节码对象。
     """
     if family == socket.AF_INET: # ipv4
         return to_bytes(socket.inet_ntoa(ipstr))
@@ -105,13 +105,13 @@ def inet_ntop(family, ipstr):
 
 def inet_pton(family, addr):
     """
-    将包含ip地址的字符串转为网络传输中的字节码对象。网络传输中的ip字节码形式为b“\x00”,而python中的字节码形式为b“00”
+    将包含ip地址的字符串转为网络传输中的字节码对象。网络传输中的ip字节码形式为b“\x00”,而python中的字节码形式为b“00”。
 
-    :param family: ip地址的类型，可选的参数有ipv4和ipv6
+    :param family: ip地址的类型，可选的参数有ipv4和ipv6。
 
-    :param addr: 一个包含ip地址的字符串
+    :param addr: 一个包含ip地址的字符串。
 
-    :return: ip在网络传输中的字节码对象
+    :return: ip在网络传输中的字节码对象。
     """
     addr = to_str(addr)
     if family == socket.AF_INET:
@@ -143,11 +143,11 @@ def inet_pton(family, addr):
 
 def is_ip(address):
     """
-    判断ip地址是属于ipv4还是ipv6
+    判断ip地址是属于ipv4还是ipv6。
 
-    :param address: 一个ip地址
+    :param address: 一个ip地址。
 
-    :return: ip地址类型，如AF_INET, AF_INET6
+    :return: ip地址类型，如AF_INET, AF_INET6。
     """
     for family in (socket.AF_INET, socket.AF_INET6):
         try:
@@ -162,9 +162,9 @@ def is_ip(address):
 
 def patch_socket():
     """
-    往socket当中添加inet_pton和inet_ntop方法
+    往socket当中添加inet_pton和inet_ntop方法。
 
-    :return: None
+    :return: None。
     """
     if not hasattr(socket, 'inet_pton'):
         socket.inet_pton = inet_pton
@@ -184,8 +184,10 @@ ADDRTYPE_HOST = 3
 
 def pack_addr(address):
     """
-    该函数主要是ip地址或者域名地址转为网络传输中的字节码对象
-    :param address:ip地址或者域名
+    该函数主要是ip地址或者域名地址转为网络传输中的字节码对象。
+
+    :param address:ip地址或者域名。
+
     :return: ip地址或者域名地址在网络传输中的字节码对象
     """
 
@@ -209,9 +211,9 @@ def parse_header(data):
     """
     该函数主要是解析ip数据包的头部并返回ip数据包类型， 目的地址， 目的端口， 数据包头部长度。
 
-    :param data: ip数据包。ip数据包的类型包括了ipv4,ipv6和域名
+    :param data: ip数据包。ip数据包的类型包括了ipv4,ipv6和域名。
 
-    :return: （ip数据包类型， 目的地址， 目的端口， 数据包头部长度）
+    :return: （ip数据包类型， 目的地址， 目的端口， 数据包头部长度）。
     """
     addrtype = ord(data[0])
     dest_addr = None
@@ -259,8 +261,9 @@ class IPNetwork(object):
 
     def __init__(self, addrs):
         """
-        接受多个ip地址组成的字符串来初始化IPNetwork的网络列表
-        :param addrs:多个ip地址组成的字符串。这里的ip地址包含了ipv4和ipv6
+        接受多个ip地址组成的字符串来初始化IPNetwork的网络列表。
+
+        :param addrs: 多个ip地址组成的字符串。这里的ip地址包含了ipv4和ipv6。
         """
         self._network_list_v4 = []
         self._network_list_v6 = []
@@ -270,9 +273,11 @@ class IPNetwork(object):
 
     def add_network(self, addr):
         """
-        该函数主要是从ip地址中提取出网段
-        :param addr:一个包含ip地址的字符串
-        :return:
+        该函数主要是从ip地址中提取出网段。
+
+        :param addr: 一个包含ip地址的字符串。
+
+        :return: None。
         """
         if addr is "":
             return
@@ -312,8 +317,10 @@ class IPNetwork(object):
 
     def __contains__(self, addr):
         """
-        判断ip地址是否在属于在IPNetwork里面的某个网段中
+        判断ip地址是否在属于在IPNetwork里面的某个网段中。
+
         :param addr: ip地址。可以是ipv4或者是ipv6。
+
         :return: 若在IPNetwork储存的某个网段中，则返回True。反之，返回False。
         """
         addr_family = is_ip(addr)
