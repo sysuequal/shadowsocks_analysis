@@ -121,7 +121,7 @@ class Encryptor(object):
         """
         获取加密算法的信息
         
-        :param method：加密算法
+        :param method:加密算法
         
         :return:加密算法信息m,m[0]key的长度,m[1]iv的长度,m[2]加密算法
         """
