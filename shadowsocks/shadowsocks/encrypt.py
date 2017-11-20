@@ -35,8 +35,11 @@ method_supported.update(table.ciphers)
 
 def random_string(length):
     """
-    随机生成n字节字符串，作为password
-    length：随机字符串的长度
+    随机生成n字节字符串
+    
+    :param length:随机字符串的长度
+    
+    :return:n字节字符串
     """
     return os.urandom(length)
 
@@ -47,8 +50,10 @@ cached_keys = {}
 def try_cipher(key, method=None):
     """
     尝试加密
-    key：用于生成密钥的key
-    method;加密算法
+    
+    :param key:用于生成密钥的key
+    
+    :param method:加密算法
     """
     Encryptor(key, method)
 
@@ -56,9 +61,14 @@ def try_cipher(key, method=None):
 def EVP_BytesToKey(password, key_len, iv_len):
     """
     生成key和密钥初始化矢量iv
-    password：用于生成key和iv
-    key_len：key的规定长度
-    iv-len:iv的规定长度
+    
+    :param password：用于生成key和iv
+    
+    :param key_len：key的规定长度
+    
+    :param iv-len:iv的规定长度
+    
+    :return:密钥key和密钥初始化向量iv
     """
     # equivalent to OpenSSL's EVP_BytesToKey() with count 1
     # so that we make the same key and iv as nodejs version
@@ -87,9 +97,11 @@ class Encryptor(object):
     def __init__(self, key, method):
         """
         初始化加密器
-        key：密钥
-        method:加密算法
-        “”“
+        
+        :param key:密钥
+        
+        :param method:加密算法
+        """
         self.key = key
         self.method = method
         self.iv = None
@@ -108,7 +120,10 @@ class Encryptor(object):
     def get_method_info(self, method):
         """
         获取加密算法的信息
-        method：加密算法
+        
+        :param method：加密算法
+        
+        :return:加密算法信息m,m[0]key的长度,m[1]iv的长度,m[2]加密算法
         """
         method = method.lower()
         m = method_supported.get(method)
@@ -117,16 +132,24 @@ class Encryptor(object):
     def iv_len(self):
         """
         获得iv的长度
+        
+        :return:密钥初始化向量iv长度
         """
         return len(self.cipher_iv)
 
     def get_cipher(self, password, method, op, iv):
-         """ 
-         获得加密算法加密器，m[0]key的长度，m[1]iv的长度，m[2]加密算法
-         password:用于生成key和iv
-         method：加密算法
-         op：操作标识，1是加密，0是解密
-         iv：key初始化矢量
+         """
+         获得加密算法加密器,m[0]key的长度,m[1]iv的长度,m[2]加密算法
+         
+         :param password:用于生成key和iv
+         
+         :param method:加密算法
+         
+         :param op:操作标识，1是加密，0是解密
+         
+         :param iv:key初始化矢量
+         
+         :return:加密器
          """
         password = common.to_bytes(password)
         m = self._method_info
@@ -145,7 +168,10 @@ class Encryptor(object):
     def encrypt(self, buf):
         """
         加密
-        buf：需要加密数据
+        
+        :param buf:需要加密数据
+        
+        :return:密文
         """
         if len(buf) == 0:
             return buf
@@ -158,7 +184,10 @@ class Encryptor(object):
     def decrypt(self, buf):、
         """
         解密
-        buf：需要解密数据
+        
+        :param buf:需要解密数据
+        
+        :return:正文
         """
         if len(buf) == 0:
             return buf
@@ -176,10 +205,16 @@ class Encryptor(object):
 def encrypt_all(password, method, op, data):
     """
     加密算法
-    method：加密算法
-    password:用于生成key
-    op：操作标识，op=1加密，op=0解密、
-    data:加密/解密数据
+    
+    :param method:加密算法
+    
+    :param password:用于生成key
+    
+    :param op:操作标识，op=1加密，op=0解密、
+    
+    :param data:加密/解密数据
+    
+    :return:密文
     """
     result = []
     method = method.lower()
