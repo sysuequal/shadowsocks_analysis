@@ -58,9 +58,11 @@ def write_pid_file(pid_file, pid):
     """
     写pid_file，记录守护线程pid号
     
-    :param pid_file：记录守护线程pid号的文件
+    :param pid_file:记录守护线程pid号的文件
     
-    :param pid：守护线程pid号
+    :param pid:守护线程pid号
+    
+    :return:0或-1,0表示成功,-1表示失败
     """
     import fcntl
     import stat
@@ -97,9 +99,9 @@ def freopen(f, mode, stream):
     """
     将文件f内容复制到stream
     
-    :param f：被复制的文件
+    :param f:被复制的文件
     
-    :param mode：文件打开模式
+    :param mode:文件打开模式
     
     :param stream:复制到的文件
     """
@@ -114,7 +116,7 @@ def daemon_start(pid_file, log_file):
     """
     创建守护进程
     
-    :param pid_file：保存守护线程pid号文件
+    :param pid_file:保存守护线程pid号文件
     
     :param log_file:log文件
     """
@@ -162,7 +164,7 @@ def daemon_stop(pid_file):
     """
     终止守护线程
     
-    :param pid_file：保存守护线程pid的文件
+    :param pid_file:保存守护线程pid的文件
     """
     import errno
     try:
@@ -212,7 +214,7 @@ def set_user(username):
     """
     设置用户
     
-    :param username：用户名
+    :param username:用户名
     """
     if username is None:
         return
