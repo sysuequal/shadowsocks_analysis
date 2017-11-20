@@ -62,9 +62,9 @@ def EVP_BytesToKey(password, key_len, iv_len):
     """
     生成key和密钥初始化矢量iv
     
-    :param password：用于生成key和iv
+    :param password:用于生成key和iv
     
-    :param key_len：key的规定长度
+    :param key_len:key的规定长度
     
     :param iv-len:iv的规定长度
     
@@ -181,7 +181,7 @@ class Encryptor(object):
             self.iv_sent = True
             return self.cipher_iv + self.cipher.update(buf)
 
-    def decrypt(self, buf):、
+    def decrypt(self, buf):
         """
         解密
         
