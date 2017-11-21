@@ -27,12 +27,15 @@ from shadowsocks import common, shell
 
 # this module is ported from ShadowVPN daemon.c
 
+
 def daemon_exec(config):
-   """
-   加载配置文件config创建守护进程
-   
-   :param config:配置文件
-   """
+    """
+    加载配置文件config创建守护进程
+
+    :param config: 配置文件
+
+    :return: None
+    """
     if 'daemon' in config:
         if os.name != 'posix':
             raise Exception('daemon mode is only supported on Unix')
@@ -57,13 +60,14 @@ def daemon_exec(config):
 def write_pid_file(pid_file, pid):
     """
     写pid_file，记录守护线程pid号
-    
-    :param pid_file:记录守护线程pid号的文件
-    
-    :param pid:守护线程pid号
-    
-    :return:0或-1,0表示成功,-1表示失败
+
+    :param pid_file: 记录守护线程pid号的文件
+
+    :param pid: 守护线程pid号
+
+    :return: 0或-1,0表示成功,-1表示失败
     """
+
     import fcntl
     import stat
 
@@ -98,39 +102,42 @@ def write_pid_file(pid_file, pid):
 def freopen(f, mode, stream):
     """
     将文件f内容复制到stream
-    
-    :param f:被复制的文件
-    
-    :param mode:文件打开模式
-    
-    :param stream:复制到的文件
+
+    :param f: 被复制的文件
+
+    :param mode: 文件打开模式
+
+    :param stream: 复制到的文件
+
+    :return: None
     """
     oldf = open(f, mode)
-    oldfd = oldf.fileno() #返回旧的整数型文件描述符
-    newfd = stream.fileno() #返回新的整数型文件描述符
-    os.close(newfd) #关闭文件描述符为newfd的文件
-    os.dup2(oldfd, newfd) #将oldfd复制到newfd，即将f内容复制到stream
+    oldfd = oldf.fileno()
+    newfd = stream.fileno()
+    os.close(newfd)
+    os.dup2(oldfd, newfd)
 
 
 def daemon_start(pid_file, log_file):
     """
     创建守护进程
-    
-    :param pid_file:保存守护线程pid号文件
-    
-    :param log_file:log文件
+
+    :param pid_file: 保存守护线程pid号文件
+    :param log_file: log文件
+
+    :return: None
     """
+
     def handle_exit(signum, _):
         if signum == signal.SIGTERM:
             sys.exit(0)
         sys.exit(1)
-        
-    #接受到中断或终止信号，退出程序
+
     signal.signal(signal.SIGINT, handle_exit)
     signal.signal(signal.SIGTERM, handle_exit)
 
     # fork only once because we are sure parent will exit
-    pid = os.fork() #创建子进程
+    pid = os.fork()
     assert pid != -1
 
     if pid > 0:
@@ -139,17 +146,17 @@ def daemon_start(pid_file, log_file):
         sys.exit(0)
 
     # child signals its parent to exit
-    ppid = os.getppid() #获得父进程pid
-    pid = os.getpid() #获得子进程pid
+    ppid = os.getppid()
+    pid = os.getpid()
     if write_pid_file(pid_file, pid) != 0:
-        os.kill(ppid, signal.SIGINT) #中断进程
-        sys.exit(1) #异常退出
+        os.kill(ppid, signal.SIGINT)
+        sys.exit(1)
 
-    os.setsid() #使子进程成为会话组长，摆脱原来的进程组，登录会话。控制终端
+    os.setsid()
     signal.signal(signal.SIG_IGN, signal.SIGHUP)
 
     print('started')
-    os.kill(ppid, signal.SIGTERM) #终止父进程
+    os.kill(ppid, signal.SIGTERM)
 
     sys.stdin.close()
     try:
@@ -163,8 +170,10 @@ def daemon_start(pid_file, log_file):
 def daemon_stop(pid_file):
     """
     终止守护线程
-    
-    :param pid_file:保存守护线程pid的文件
+
+    :param pid_file: 保存守护线程pid的文件
+
+    :return: None
     """
     import errno
     try:
@@ -183,7 +192,7 @@ def daemon_stop(pid_file):
     pid = int(pid)
     if pid > 0:
         try:
-            os.kill(pid, signal.SIGTERM) #终止守护进程
+            os.kill(pid, signal.SIGTERM)
         except OSError as e:
             if e.errno == errno.ESRCH:
                 logging.error('not running')
@@ -207,14 +216,16 @@ def daemon_stop(pid_file):
         logging.error('timed out when stopping pid %d', pid)
         sys.exit(1)
     print('stopped')
-    os.unlink(pid_file) #删除文件
+    os.unlink(pid_file)
 
 
 def set_user(username):
     """
     设置用户
-    
-    :param username:用户名
+
+    :param username: 用户名
+
+    :return: None
     """
     if username is None:
         return
@@ -223,7 +234,7 @@ def set_user(username):
     import grp
 
     try:
-        pwrec = pwd.getpwnam(username) #返回对应username的用户信息，即本机用户信息
+        pwrec = pwd.getpwnam(username)
     except KeyError:
         logging.error('user not found: %s' % username)
         raise
@@ -240,8 +251,8 @@ def set_user(username):
 
     # inspired by supervisor
     if hasattr(os, 'setgroups'):
-        groups = [grprec[2] for grprec in grp.getgrall() if user in grprec[3]] #得到所有gid
-        groups.insert(0, gid) #在gid列表开头插入gid
-        os.setgroups(groups) #重新设置gid组
+        groups = [grprec[2] for grprec in grp.getgrall() if user in grprec[3]]
+        groups.insert(0, gid)
+        os.setgroups(groups)
     os.setgid(gid)
     os.setuid(uid)
