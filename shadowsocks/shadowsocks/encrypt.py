@@ -247,11 +247,6 @@ CIPHERS_TO_TEST = [
 
 
 def test_encryptor():
-    """
-    测试所有加密算法加密器加密和解密
-
-    :return: None
-    """
     from os import urandom
     plain = urandom(10240)
     for method in CIPHERS_TO_TEST:
@@ -264,11 +259,6 @@ def test_encryptor():
 
 
 def test_encrypt_all():
-    """
-    测试所有加密算法的加密和解密
-
-    :return: None
-    """
     from os import urandom
     plain = urandom(10240)
     for method in CIPHERS_TO_TEST:
