@@ -34,8 +34,15 @@ else:
     translate = bytes.translate
 
 
-def get_table(key):"获取table加密算法"
-    "key:加密所用的密码"
+def get_table(key):
+    """
+    
+    获取table加密算法
+    
+    :param key:加密所用的密码
+    
+    :return:加密算法
+    """
     m = hashlib.md5()
     m.update(key)
     s = m.digest()
@@ -47,8 +54,15 @@ def get_table(key):"获取table加密算法"
     return table
 
 
-def init_table(key):"初始table加密算法"
-    "key：加密所用的密码"
+def init_table(key):
+    """
+    
+    初始table加密算法
+    
+    :param key：加密所用的密码
+    
+    :return:加密算法
+    """
     if key not in cached_tables:
         encrypt_table = b''.join(get_table(key))
         decrypt_table = maketrans(encrypt_table, maketrans(b'', b''))
@@ -56,17 +70,35 @@ def init_table(key):"初始table加密算法"
     return cached_tables[key]
 
 
-class TableCipher(object):"table加密算法类"
-    def __init__(self, cipher_name, key, iv, op):"初始函数"
-    "cipher_name：算法名字"
-    "key：加密所用的密码"
-    "iv:初始向量"
-    "op:加密或者加密操作"
+class TableCipher(object):
+    """
+    
+    table加密算法类
+    """
+    def __init__(self, cipher_name, key, iv, op):
+    """
+    
+    初始函数
+    :param cipher_name：算法名字
+    
+    :param key：加密所用的密码
+    
+    :param iv:初始向量
+    
+    :param op:加密或者加密操作
+    """
         self._encrypt_table, self._decrypt_table = init_table(key)
         self._op = op
 
-    def update(self, data):"加载加密数据"
-        "data：加密数据"
+    def update(self, data):
+        """
+        
+        加载加密数据
+        
+        :param data：加密数据
+        
+        :return:加密后的数据
+        """
         if self._op:
             return translate(data, self._encrypt_table)
         else:
@@ -78,7 +110,11 @@ ciphers = {
 }
 
 
-def test_table_result():"table加密测试结果"
+def test_table_result():
+    """
+    
+    table加密测试结果
+    """
     from shadowsocks.common import ord
     target1 = [
         [60, 53, 84, 138, 217, 94, 88, 23, 39, 242, 219, 35, 12, 157, 165, 181,
@@ -167,7 +203,7 @@ def test_table_result():"table加密测试结果"
         assert (target2[1][i] == ord(decrypt_table[i]))
 
 
-def test_encryption():"测试"
+def test_encryption():
     from shadowsocks.crypto import util
 
     cipher = TableCipher('table', b'test', b'', 1)
