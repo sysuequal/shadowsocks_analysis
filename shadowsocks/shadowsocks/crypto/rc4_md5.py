@@ -47,6 +47,8 @@ def create_cipher(alg, key, iv, op, key_as_bytes=0, d=None, salt=None,
     :param i:生成密码所用的迭代次数
     
     :param padding:填充加密块
+    
+    :return:创建后的密码
     """
     md5 = hashlib.md5()
     md5.update(key)
