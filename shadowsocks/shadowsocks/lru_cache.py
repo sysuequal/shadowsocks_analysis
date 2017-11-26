@@ -35,6 +35,17 @@ class LRUCache(collections.MutableMapping):
     """This class is not thread safe"""
 
     def __init__(self, timeout=60, close_callback=None, *args, **kwargs):
+        """
+        初始化整个类的参数
+
+        :param timeout: 定时清除缓存数据的时长设置
+
+        :param close_callback: 将缓存里的数据标志关闭的回调函数
+
+        :param args: 任何多个无名参任何多个无名参，是一个元组
+
+        :param kwargs: 关键字参数，是一个字典
+        """
         self.timeout = timeout
         self.close_callback = close_callback
         self._store = {}
@@ -46,6 +57,15 @@ class LRUCache(collections.MutableMapping):
 
     def __getitem__(self, key):
         # O(1)
+
+        """
+        将这一次的时间保存为下来，作为未来的过去时间，返回index对应的缓存数据
+
+        :param key: 此时刻下对应的键值
+
+        :return: 键值对应的缓存数据
+        """
+
         t = time.time()
         self._keys_to_last_time[key] = t
         self._time_to_keys[t].append(key)
@@ -54,6 +74,17 @@ class LRUCache(collections.MutableMapping):
 
     def __setitem__(self, key, value):
         # O(1)
+
+        """
+        将键值所对应的缓存数据保存下来
+
+        :param key: 需要缓存的数据所对应的键值
+
+        :param value: 键值所对应缓存数据的值
+
+        :return: 无
+        """
+
         t = time.time()
         self._keys_to_last_time[key] = t
         self._store[key] = value
@@ -62,17 +93,47 @@ class LRUCache(collections.MutableMapping):
 
     def __delitem__(self, key):
         # O(1)
+
+        """
+        删除缓存数据
+
+        :param key: 需要删除的缓存数据的键值
+
+        :return: 无
+        """
+
         del self._store[key]
         del self._keys_to_last_time[key]
 
     def __iter__(self):
+
+        """
+        遍历缓存数据
+
+        :return: 遍历缓存数据
+        """
+
         return iter(self._store)
 
     def __len__(self):
+
+        """
+        获取缓存数据的数据长度
+
+        :return: 缓存数据的长度
+        """
+
         return len(self._store)
 
     def sweep(self):
         # O(m)
+
+        """
+        清除最近这段时间内的最少被使用的缓存数据
+
+        :return: 无
+        """
+
         now = time.time()
         c = 0
         while len(self._last_visits) > 0:
@@ -101,6 +162,7 @@ class LRUCache(collections.MutableMapping):
 
 
 def test():
+    
     c = LRUCache(timeout=0.3)
 
     c['a'] = 1
