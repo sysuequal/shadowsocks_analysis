@@ -31,7 +31,12 @@ loaded = False
 buf_size = 2048
 
 
-def load_openssl():"加载openssl"
+def load_openssl():
+    """
+    
+    加载openssl
+    """
+    
     global loaded, libcrypto, buf
 
     libcrypto = util.find_library(('crypto', 'eay32'),
@@ -58,8 +63,15 @@ def load_openssl():"加载openssl"
     loaded = True
 
 
-def load_cipher(cipher_name):"加载密码算法"
-    "cipher_name:算法名称"
+def load_cipher(cipher_name):
+    """
+    
+    加载密码算法
+    
+    :param cipher_name: 算法名称
+    
+    :return: 密码算法
+    """
     func_name = 'EVP_' + cipher_name.replace('-', '_')
     if bytes != str:
         func_name = str(func_name, 'utf-8')
@@ -70,12 +82,24 @@ def load_cipher(cipher_name):"加载密码算法"
     return None
 
 
-class OpenSSLCrypto(object):"openssl加密类"
+class OpenSSLCrypto(object):
+    """
+    
+    openssl加密类
+    """
     def __init__(self, cipher_name, key, iv, op):
-    "cipher_name：算法名字"
-    "key：加密所用的密码"
-    "iv:初始向量"
-    "op:加密或者加密操作"
+    """
+    
+    初始函数
+    
+    :param cipher_name：算法名字
+    
+    :param key：加密所用的密码
+    
+    :param iv:初始向量
+    
+    :param op:加密或者加密操作
+    """
         self._ctx = None
         if not loaded:
             load_openssl()
@@ -96,8 +120,15 @@ class OpenSSLCrypto(object):"openssl加密类"
             self.clean()
             raise Exception('can not initialize cipher context')
 
-    def update(self, data):"添加加密数据"
-        "data:加密数据"
+    def update(self, data):
+        """
+        
+        添加加密数据
+        
+        :param data:加密数据
+        
+        :retuen:加密后的数据
+        """
         global buf_size, buf
         cipher_out_len = c_long(0)
         l = len(data)
@@ -109,10 +140,18 @@ class OpenSSLCrypto(object):"openssl加密类"
         # buf is copied to a str object when we access buf.raw
         return buf.raw[:cipher_out_len.value]
 
-    def __del__(self):"析构函数"
+    def __del__(self):
+        """
+        
+        析构函数
+        """
         self.clean()
 
-    def clean(self):"清除对象"
+    def clean(self):
+        """
+        
+        清除对象
+        """
         if self._ctx:
             libcrypto.EVP_CIPHER_CTX_cleanup(self._ctx)
             libcrypto.EVP_CIPHER_CTX_free(self._ctx)
@@ -147,39 +186,44 @@ ciphers = {
 }
 
 
-def run_method(method):"执行加密方法"
-"method:加密方法名称"
+def run_method(method):
+    """
+    
+    执行加密方法
+    
+    :param method:加密方法名称
+    """
     cipher = OpenSSLCrypto(method, b'k' * 32, b'i' * 16, 1)
     decipher = OpenSSLCrypto(method, b'k' * 32, b'i' * 16, 0)
 
     util.run_cipher(cipher, decipher)
 
 
-def test_aes_128_cfb():"测试"
+def test_aes_128_cfb():
     run_method('aes-128-cfb')
 
 
-def test_aes_256_cfb():"测试"
+def test_aes_256_cfb():
     run_method('aes-256-cfb')
 
 
-def test_aes_128_cfb8():"测试"
+def test_aes_128_cfb8():
     run_method('aes-128-cfb8')
 
 
-def test_aes_256_ofb():"测试"
+def test_aes_256_ofb():
     run_method('aes-256-ofb')
 
 
-def test_aes_256_ctr():"测试"
+def test_aes_256_ctr():
     run_method('aes-256-ctr')
 
 
-def test_bf_cfb():"测试"
+def test_bf_cfb():
     run_method('bf-cfb')
 
 
-def test_rc4():"测试"
+def test_rc4():
     run_method('rc4')
 
 
