@@ -127,7 +127,7 @@ class OpenSSLCrypto(object):
         
         :param data:加密数据
         
-        :retuen:加密后的数据
+        :return:加密后的数据
         """
         global buf_size, buf
         cipher_out_len = c_long(0)
