@@ -162,11 +162,7 @@ class LRUCache(collections.MutableMapping):
 
 
 def test():
-    """
-    测试代码
-
-    :return: 无
-    """
+    
     c = LRUCache(timeout=0.3)
 
     c['a'] = 1
