@@ -96,6 +96,9 @@ def EVP_BytesToKey(password, key_len, iv_len):
 
 
 class Encryptor(object):
+    """
+    加密器,对传输数据进行加密
+    """
     def __init__(self, key, method):
         """
         初始化加密器
