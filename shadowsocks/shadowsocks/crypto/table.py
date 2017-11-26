@@ -79,6 +79,7 @@ class TableCipher(object):
     """
     
     初始函数
+    
     :param cipher_name：算法名字
     
     :param key：加密所用的密码
