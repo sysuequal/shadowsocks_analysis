@@ -91,6 +91,11 @@ def client_key(source_addr, server_af):
 
 
 class UDPRelay(object):
+
+    """
+    这个类是处理用UDP协议来传输的SOCK5连接数据的类，管理所有UDP数据接收发送
+
+    """
     def __init__(self, config, dns_resolver, is_local, stat_callback=None):
 
         """
@@ -168,7 +173,7 @@ class UDPRelay(object):
 
         :param client: 需要关闭的UDP
 
-        :return:
+        :return: None
         """
         if hasattr(client, 'close'):
             self._sockets.remove(client.fileno())
@@ -183,7 +188,7 @@ class UDPRelay(object):
         """
         服务端处理数据，如果是远端服务端则解密转发数据，如果是本地服务端则加密传送到远端服务端
 
-        :return:
+        :return: None
         """
         server = self._server_socket
         data, r_addr = server.recvfrom(BUF_SIZE)
@@ -267,7 +272,7 @@ class UDPRelay(object):
 
         :param sock: 与服务器的socket
 
-        :return:
+        :return: None
         """
         data, r_addr = sock.recvfrom(BUF_SIZE)
         if not data:
@@ -310,7 +315,7 @@ class UDPRelay(object):
 
         :param loop: 需要加入到的时间循环
 
-        :return:
+        :return: None
         """
         if self._eventloop:
             raise Exception('already add to loop')
@@ -334,7 +339,7 @@ class UDPRelay(object):
 
         :param event: 具体的事件
 
-        :return:
+        :return: None
         """
         if sock == self._server_socket:
             if event & eventloop.POLL_ERR:
@@ -349,7 +354,8 @@ class UDPRelay(object):
 
         """
         判断UDPRealy是否关闭，若是，关闭与之相关的socket连接，清除缓存
-        :return:
+
+        :return: None
         """
         if self._closed:
             if self._server_socket:
@@ -368,7 +374,7 @@ class UDPRelay(object):
 
         :param next_tick: 标记
 
-        :return:
+        :return: None
         """
         logging.debug('UDP close')
         self._closed = True

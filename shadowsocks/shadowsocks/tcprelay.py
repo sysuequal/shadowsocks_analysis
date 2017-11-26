@@ -91,6 +91,11 @@ BUF_SIZE = 32 * 1024
 
 
 class TCPRelayHandler(object):
+
+    """
+    这个是用来处理单个TCP连接的事件的handler
+
+    """
     def __init__(self, server, fd_to_handlers, loop, local_sock, config,
                  dns_resolver, is_local):
         """
@@ -151,7 +156,7 @@ class TCPRelayHandler(object):
         """
         返回一个哈希值
 
-        :return:  返回一个哈希值
+        :return: 返回一个哈希值
         """
         # default __hash__ is id / 16
         # we want to eliminate collisions
@@ -190,7 +195,7 @@ class TCPRelayHandler(object):
 
         :param data_len: 消息数据长度
 
-        :return:
+        :return: None
         """
         # tell the TCP Relay we have activities recently
         # else it will think we are inactive and timed out
@@ -205,7 +210,7 @@ class TCPRelayHandler(object):
 
         :param status: 状态
 
-        :return:
+        :return: None
         """
         # update a stream to a new waiting status
 
@@ -294,7 +299,7 @@ class TCPRelayHandler(object):
 
         :param data: 连接消息
 
-        :return:
+        :return: None
         """
         if self._is_local:
             data = self._encryptor.encrypt(data)
@@ -340,7 +345,7 @@ class TCPRelayHandler(object):
 
         :param data: 建立连接发送的消息
 
-        :return:
+        :return: None
         """
         try:
             if self._is_local:
@@ -436,7 +441,7 @@ class TCPRelayHandler(object):
 
         :param error: 域名解析时发生的错误
 
-        :return:
+        :return: None
         """
         if error:
             self._log_error(error)
@@ -490,7 +495,7 @@ class TCPRelayHandler(object):
         """
         本地服务端从socket读取消息
 
-        :return:
+        :return: None
         """
         # handle all local read events and dispatch them to methods for
         # each stage
@@ -533,7 +538,7 @@ class TCPRelayHandler(object):
         """
         远端服务端从socket读取消息
 
-        :return:
+        :return: None
         """
         # handle all remote read events
         data = None
@@ -566,7 +571,7 @@ class TCPRelayHandler(object):
         """
         本地服务端向socket发消息
 
-        :return:
+        :return: None
         """
         # handle local writable event
         if self._data_to_write_to_local:
@@ -581,7 +586,7 @@ class TCPRelayHandler(object):
         """
         远端服务端向socket发消息
 
-        :return:
+        :return: None
         """
         # handle remote writable event
         self._stage = STAGE_STREAM
@@ -597,7 +602,7 @@ class TCPRelayHandler(object):
         """
         本地服务端出现错误，并销毁handler
 
-        :return:
+        :return: None
         """
         logging.debug('got local error')
         if self._local_sock:
@@ -609,7 +614,7 @@ class TCPRelayHandler(object):
         """
         远端服务端出现错误，并销毁handler
 
-        :return:
+        :return: None
         """
         logging.debug('got remote error')
         if self._remote_sock:
@@ -625,7 +630,7 @@ class TCPRelayHandler(object):
 
         :param event: 具体的事件
 
-        :return:
+        :return: None
         """
         # handle all events in this handler and dispatch them to methods
         if self._stage == STAGE_DESTROYED:
@@ -664,7 +669,7 @@ class TCPRelayHandler(object):
 
         :param e: 错误信息
 
-        :return:
+        :return: None
         """
         logging.error('%s when handling connection from %s:%d' %
                       (e, self._client_address[0], self._client_address[1]))
@@ -674,7 +679,7 @@ class TCPRelayHandler(object):
         """
         删除handler，销毁对象
 
-        :return:
+        :return: None
         """
         # destroy the handler and release any resources
         # promises:
@@ -710,6 +715,11 @@ class TCPRelayHandler(object):
 
 
 class TCPRelay(object):
+
+    """
+    对所有的TCP连接进行管理，然后根据类型来新建TCP连接或者分发任务事件
+
+    """
     def __init__(self, config, dns_resolver, is_local, stat_callback=None):
 
         """
@@ -771,7 +781,7 @@ class TCPRelay(object):
 
         :param loop: 需要加入的事件循环
 
-        :return:
+        :return: None
         """
         if self._eventloop:
             raise Exception('already add to loop')
@@ -789,7 +799,7 @@ class TCPRelay(object):
 
         :param handler: 需要删除的Handler
 
-        :return:
+        :return: None
         """
         index = self._handler_to_timeouts.get(hash(handler), -1)
         if index >= 0:
@@ -806,7 +816,7 @@ class TCPRelay(object):
 
         :param data_len: 新的数据的长度
 
-        :return:
+        :return: None
         """
         if data_len and self._stat_callback:
             self._stat_callback(self._listen_port, data_len)
@@ -830,7 +840,7 @@ class TCPRelay(object):
         """
         处理超时handler，不断检索超时队列里的handler，并把它们释放
 
-        :return:
+        :return: None
         """
         # tornado's timeout memory management is more flexible than we need
         # we just need a sorted last_activity queue and it's faster than heapq
@@ -876,7 +886,7 @@ class TCPRelay(object):
 
         :param event: 触发的事件
 
-        :return:
+        :return: None
         """
         # handle events and dispatch to handlers
         if sock:
@@ -914,7 +924,7 @@ class TCPRelay(object):
         """
         检查一个TCPRealy是否关闭，如果关闭了，就断开与其相关的TCP连接，并将其从事件循环中删除，调用 _sweep_timeout 定期清理一段时间内不活跃的 TCPRelayHandler
 
-        :return:
+        :return: None
         """
         if self._closed:
             if self._server_socket:
@@ -934,7 +944,7 @@ class TCPRelay(object):
 
         :param next_tick: 标记位
 
-        :return:
+        :return: None
         """
         logging.debug('TCP close')
         self._closed = True
