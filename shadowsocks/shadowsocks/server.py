@@ -29,27 +29,36 @@ from shadowsocks import shell, daemon, eventloop, tcprelay, udprelay, \
 
 
 def main():
+    """
+    启动服务器主函数 
+
+    :return: None
+    """
     shell.check_python()
-
     config = shell.get_config(False)
-
     daemon.daemon_exec(config)
-
     if config['port_password']:
         if config['password']:
+	    # 提示：端口密码不能用服务器端口号和密码
             logging.warn('warning: port_password should not be used with '
                          'server_port and password. server_port and password '
                          'will be ignored')
     else:
+        # 清空端口密码
         config['port_password'] = {}
+	# 提取服务器端口
         server_port = config['server_port']
+	# 如果是列表形式
         if type(server_port) == list:
+	# 给每个port赋password
             for a_server_port in server_port:
                 config['port_password'][a_server_port] = config['password']
         else:
+	# 只有1个port，单独赋值
             config['port_password'][str(server_port)] = config['password']
 
     if config.get('manager_address', 0):
+	# 管理模式
         logging.info('entering manager mode')
         manager.run(config)
         return
@@ -57,19 +66,37 @@ def main():
     tcp_servers = []
     udp_servers = []
     dns_resolver = asyncdns.DNSResolver()
+    # 得到每个端口的密码
     port_password = config['port_password']
     del config['port_password']
+    # 对每个端口及其对应的密码
     for port, password in port_password.items():
         a_config = config.copy()
+	# 记录当前端口和密码
         a_config['server_port'] = int(port)
         a_config['password'] = password
+	# 开启服务器
         logging.info("starting server at %s:%d" %
                      (a_config['server'], int(port)))
         tcp_servers.append(tcprelay.TCPRelay(a_config, dns_resolver, False))
         udp_servers.append(udprelay.UDPRelay(a_config, dns_resolver, False))
 
     def run_server():
+        """
+        服务器运行
+        
+        :return: None
+        """
         def child_handler(signum, _):
+            """
+            子程序要求关闭 
+            
+            :param signum: 信号值
+            
+            :param _: 不明
+            
+            :return: None 
+            """
             logging.warn('received SIGQUIT, doing graceful shutting down..')
             list(map(lambda s: s.close(next_tick=True),
                      tcp_servers + udp_servers))
@@ -77,11 +104,21 @@ def main():
                       child_handler)
 
         def int_handler(signum, _):
+            """
+            强制退出程序，意义不明 
+            
+            :param signum: 信号值
+            
+            :param _: 不明
+            
+            :return: None
+            """
             sys.exit(1)
         signal.signal(signal.SIGINT, int_handler)
 
         try:
             loop = eventloop.EventLoop()
+	    # 用addtoloop把dnsresolver添加到eventloop里，当DNSResolver对应的socket有dns解析结果可以读取的时候，eventloop会自动调用其handle_event方法将就绪的socket递给DNSResolver，DNSResolver就可以从其中读取dns应答数据了。
             dns_resolver.add_to_loop(loop)
             list(map(lambda s: s.add_to_loop(loop), tcp_servers + udp_servers))
 
@@ -91,6 +128,7 @@ def main():
             shell.print_exception(e)
             sys.exit(1)
 
+    # workers<=1时开启服务器，>1时检查
     if int(config['workers']) > 1:
         if os.name == 'posix':
             children = []
@@ -105,7 +143,19 @@ def main():
                 else:
                     children.append(r)
             if not is_child:
+                # 不是子进程
                 def handler(signum, _):
+                    """
+                    关闭所有子进程
+                    
+                    :param signum: 信号值 
+                    
+                    :param _: 不明 
+                    
+                    :return: None
+                    
+                    :raises OSError: 子进程已经退出
+                    """
                     for pid in children:
                         try:
                             os.kill(pid, signum)
@@ -117,7 +167,7 @@ def main():
                 signal.signal(signal.SIGQUIT, handler)
                 signal.signal(signal.SIGINT, handler)
 
-                # master
+                # 关闭所有服务器
                 for a_tcp_server in tcp_servers:
                     a_tcp_server.close()
                 for a_udp_server in udp_servers:
