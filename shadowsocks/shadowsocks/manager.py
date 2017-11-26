@@ -271,6 +271,12 @@ class Manager(object):
 
 def run(config):
 
+    """
+    传入配置参数，运行端口管理程序
+
+    :return: 无
+    """
+    
     Manager(config).run()
 
 
