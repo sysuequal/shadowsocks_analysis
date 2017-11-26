@@ -33,7 +33,11 @@ buf_size = 2048
 BLOCK_SIZE = 64
 
 
-def load_libsodium():"加载sodium"
+def load_libsodium():
+    """
+    
+    加载sodium
+    """
     global loaded, libsodium, buf
 
     libsodium = util.find_library('sodium', 'crypto_stream_salsa20_xor_ic',
@@ -56,12 +60,24 @@ def load_libsodium():"加载sodium"
     loaded = True
 
 
-class SodiumCrypto(object):"sodium加密算法类"
-    def __init__(self, cipher_name, key, iv, op):"初始函数"
-    "cipher_name：算法名字"
-    "key：加密所用的密码"
-    "iv:初始向量"
-    "op:加密或者加密操作"
+class SodiumCrypto(object):
+    """
+    
+    sodium加密算法类
+    """
+    def __init__(self, cipher_name, key, iv, op):
+    """
+    
+    初始函数
+    
+    :param cipher_name：算法名字
+    
+    :param key：加密所用的密码
+    
+    :param iv:初始向量
+    
+    :param op:加密或者加密操作
+    """
         if not loaded:
             load_libsodium()
         self.key = key
@@ -77,8 +93,15 @@ class SodiumCrypto(object):"sodium加密算法类"
         # byte counter, not block counter
         self.counter = 0
 
-    def update(self, data):"上传加密数据"
-        "data:加密的数据"
+    def update(self, data):
+        """
+        
+        上传加密数据
+        
+        :param data:加密的数据
+        
+        :return:加密后的数据
+        """
         global buf_size, buf
         l = len(data)
 
@@ -105,14 +128,14 @@ ciphers = {
 }
 
 
-def test_salsa20():"测试"
+def test_salsa20():
     cipher = SodiumCrypto('salsa20', b'k' * 32, b'i' * 16, 1)
     decipher = SodiumCrypto('salsa20', b'k' * 32, b'i' * 16, 0)
 
     util.run_cipher(cipher, decipher)
 
 
-def test_chacha20():"测试"
+def test_chacha20():
 
     cipher = SodiumCrypto('chacha20', b'k' * 32, b'i' * 16, 1)
     decipher = SodiumCrypto('chacha20', b'k' * 32, b'i' * 16, 0)
