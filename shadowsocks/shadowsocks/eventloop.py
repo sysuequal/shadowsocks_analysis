@@ -57,6 +57,9 @@ TIMEOUT_PRECISION = 10 # 每过10秒就检查一次是否有IO事件到来
 
 # IO复用接口 kqueue
 class KqueueLoop(object):
+    """
+    重写kqueue IO复用，使接口统一。
+    """
 
     # 最大事件数
     MAX_EVENTS = 1024
@@ -156,6 +159,9 @@ class KqueueLoop(object):
 
 # IO复用接口 select
 class SelectLoop(object):
+    """
+    重写select IO复用，使接口统一
+    """
 
     def __init__(self):
         """
@@ -236,6 +242,9 @@ class SelectLoop(object):
 
 
 class EventLoop(object):
+    """
+    IO复用类。本软件采用的IO复用接口都由这个类来定义。
+    """
     def __init__(self):
         """
         选择IO复用模式，初始化参数
@@ -394,7 +403,8 @@ class EventLoop(object):
 
 # from tornado
 def errno_from_exception(e):
-    """Provides the errno from an Exception object.
+    """
+    Provides the errno from an Exception object.
 
     There are cases that the errno attribute was not set so we pull
     the errno out of the args but if someone instatiates an Exception
