@@ -53,7 +53,7 @@ EVENT_NAMES = {
 }
 
 # we check timeouts every TIMEOUT_PRECISION seconds
-TIMEOUT_PRECISION = 10
+TIMEOUT_PRECISION = 10 # 每过10秒就检查一次是否有IO事件到来
 
 # IO复用接口 kqueue
 class KqueueLoop(object):
@@ -92,7 +92,7 @@ class KqueueLoop(object):
         """
         等待事件触发，返回触发的事件
 
-        :param timeout: 最长等待事件
+        :param timeout: 最长等待时间
 
         :return: 触发的事件
         """
@@ -281,9 +281,9 @@ class EventLoop(object):
 
         :return: none
         """
-        fd = f.fileno()
-        self._fdmap[fd] = (f, handler)
-        self._impl.register(fd, mode)
+        fd = f.fileno() # fileno返回套接字标识符
+        self._fdmap[fd] = (f, handler) # 建立套接字标识符和套接字和文件句柄的映射
+        self._impl.register(fd, mode) # 注册IO复用事件
 
     def remove(self, f):
         """
