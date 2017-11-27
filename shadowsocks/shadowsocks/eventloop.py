@@ -55,19 +55,19 @@ EVENT_NAMES = {
 # we check timeouts every TIMEOUT_PRECISION seconds
 TIMEOUT_PRECISION = 10 # 每过10秒就检查一次是否有IO事件到来
 
+
 # IO复用接口 kqueue
 class KqueueLoop(object):
     """
     重写kqueue IO复用，使接口统一。
     """
-
     # 最大事件数
     MAX_EVENTS = 1024
 
     def __init__(self):
-        '''
+        """
         调用select.kqueue获取IO复用接口kqueue，并初始化socket文件描述符字典fds
-        '''
+        """
         self._kqueue = select.kqueue()
         self._fds = {}
 
@@ -157,12 +157,12 @@ class KqueueLoop(object):
         """
         self._kqueue.close()
 
+
 # IO复用接口 select
 class SelectLoop(object):
     """
-    重写select IO复用，使接口统一
+    重写select IO复用，使接口统一。
     """
-
     def __init__(self):
         """
         初始化三个事件侦听集合：读事件集合、写事件集合和出错事件集合
