@@ -34,6 +34,10 @@ STAT_SEND_LIMIT = 100
 
 class Manager(object):
 
+    """
+    管理服务端端口
+    """
+    
     def __init__(self, config):
 
         """
