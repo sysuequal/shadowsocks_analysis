@@ -28,6 +28,11 @@ from shadowsocks import shell, daemon, eventloop, tcprelay, udprelay, asyncdns
 
 
 def main():
+    '''
+    客户端 sslocal 入口函数
+
+    :return: none
+    '''
     shell.check_python()
 
     # fix py2exe
@@ -38,15 +43,18 @@ def main():
 
     config = shell.get_config(True)
 
+    # 解析配置文件
     daemon.daemon_exec(config)
 
     try:
         logging.info("starting local at %s:%d" %
                      (config['local_address'], config['local_port']))
 
+        # 创建 DNS 解析器、 TCP 中继器、 UDP 中继器三个组件
         dns_resolver = asyncdns.DNSResolver()
         tcp_server = tcprelay.TCPRelay(config, dns_resolver, True)
         udp_server = udprelay.UDPRelay(config, dns_resolver, True)
+        # 将组件加入事件循环中，以触发实现预定的行为
         loop = eventloop.EventLoop()
         dns_resolver.add_to_loop(loop)
         tcp_server.add_to_loop(loop)
