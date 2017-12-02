@@ -1,0 +1,15 @@
+SS Local
+获取客户端配置文件
+启动客户端进程
+while(1)
+    if DNS解析请求 then
+        call DNS解析
+    if tcp转发 then
+        call tcp转发
+    if udp转发 then
+        call udp转发
+    if 收到退出请求 then
+        关闭tcp、udp连接
+    if 收到终止请求 then
+        关闭客户端进程
+        break
