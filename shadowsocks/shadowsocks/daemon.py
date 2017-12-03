@@ -29,6 +29,13 @@ from shadowsocks import common, shell
 
 
 def daemon_exec(config):
+    """
+    加载配置文件config创建守护进程
+
+    :param config: 配置文件
+
+    :return: None
+    """
     if 'daemon' in config:
         if os.name != 'posix':
             raise Exception('daemon mode is only supported on Unix')
@@ -51,6 +58,16 @@ def daemon_exec(config):
 
 
 def write_pid_file(pid_file, pid):
+    """
+    写pid_file，记录守护线程pid号
+
+    :param pid_file: 记录守护线程pid号的文件
+
+    :param pid: 守护线程pid号
+
+    :return: 0或-1,0表示成功,-1表示失败
+    """
+
     import fcntl
     import stat
 
@@ -83,6 +100,17 @@ def write_pid_file(pid_file, pid):
 
 
 def freopen(f, mode, stream):
+    """
+    将文件f内容复制到stream
+
+    :param f: 被复制的文件
+
+    :param mode: 文件打开模式
+
+    :param stream: 复制到的文件
+
+    :return: None
+    """
     oldf = open(f, mode)
     oldfd = oldf.fileno()
     newfd = stream.fileno()
@@ -91,6 +119,15 @@ def freopen(f, mode, stream):
 
 
 def daemon_start(pid_file, log_file):
+    """
+    创建守护进程
+
+    :param pid_file: 保存守护线程pid号文件
+    
+    :param log_file: log文件
+
+    :return: None
+    """
 
     def handle_exit(signum, _):
         if signum == signal.SIGTERM:
@@ -132,6 +169,13 @@ def daemon_start(pid_file, log_file):
 
 
 def daemon_stop(pid_file):
+    """
+    终止守护线程
+
+    :param pid_file: 保存守护线程pid的文件
+
+    :return: None
+    """
     import errno
     try:
         with open(pid_file) as f:
@@ -177,6 +221,13 @@ def daemon_stop(pid_file):
 
 
 def set_user(username):
+    """
+    设置用户
+
+    :param username: 用户名
+
+    :return: None
+    """
     if username is None:
         return
 
