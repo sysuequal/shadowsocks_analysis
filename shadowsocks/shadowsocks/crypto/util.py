@@ -26,9 +26,9 @@ def find_library_nt(name):
     
     寻找库文件
     
-    :param name:库文件名
+    :param name: 库文件名
     
-    :return:库文件
+    :return: 库文件
     """
     # modified from ctypes.util
     # ctypes.util.find_library just returns first result he found
@@ -52,13 +52,13 @@ def find_library(possible_lib_names, search_symbol, library_name):
     
     寻找库文件
     
-    :param possible_lib_names:可能的库文件名
+    :param possible_lib_names: 可能的库文件名
     
-    :param search_symbol:系统盘标识
+    :param search_symbol: 系统盘标识
     
-    :param library_name:库文件
+    :param library_name: 库文件
     
-    :return:库文件
+    :return: 库文件
     """
     import ctypes.util
     from ctypes import CDLL
@@ -117,9 +117,9 @@ def run_cipher(cipher, decipher):
     
     执行密码算法
     
-    :param cipher:加密对象
+    :param cipher: 加密对象
     
-    :param decipher:解密对象
+    :param decipher: 解密对象
     """
     from os import urandom
     import random
