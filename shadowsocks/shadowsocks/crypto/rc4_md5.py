@@ -34,21 +34,21 @@ def create_cipher(alg, key, iv, op, key_as_bytes=0, d=None, salt=None,
     
     :param key：加密所用的密码
     
-    :param iv:初始向量
+    :param iv: 初始向量
     
-    :param op:加密或者加密操作
+    :param op: 加密或者加密操作
     
-    :param key_as_bytes:生成密码方法选择
+    :param key_as_bytes: 生成密码方法选择
     
-    :param d:散列算法
+    :param d: 散列算法
     
-    :param salt:生成密码所用的参数
+    :param salt: 生成密码所用的参数
     
-    :param i:生成密码所用的迭代次数
+    :param i: 生成密码所用的迭代次数
     
-    :param padding:填充加密块
+    :param padding: 填充加密块
     
-    :return:创建后的密码
+    :return: 创建后的密码
     """
     md5 = hashlib.md5()
     md5.update(key)
