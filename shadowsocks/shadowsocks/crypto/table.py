@@ -39,9 +39,9 @@ def get_table(key):
     
     获取table加密算法
     
-    :param key:加密所用的密码
+    :param key: 加密所用的密码
     
-    :return:加密算法
+    :return: 加密算法
     """
     m = hashlib.md5()
     m.update(key)
@@ -61,7 +61,7 @@ def init_table(key):
     
     :param key：加密所用的密码
     
-    :return:加密算法
+    :return: 加密算法
     """
     if key not in cached_tables:
         encrypt_table = b''.join(get_table(key))
@@ -84,9 +84,9 @@ class TableCipher(object):
     
     :param key：加密所用的密码
     
-    :param iv:初始向量
+    :param iv: 初始向量
     
-    :param op:加密或者加密操作
+    :param op: 加密或者加密操作
     """
         self._encrypt_table, self._decrypt_table = init_table(key)
         self._op = op
@@ -98,7 +98,7 @@ class TableCipher(object):
         
         :param data：加密数据
         
-        :return:加密后的数据
+        :return: 加密后的数据
         """
         if self._op:
             return translate(data, self._encrypt_table)
