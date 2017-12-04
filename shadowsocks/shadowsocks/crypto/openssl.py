@@ -96,9 +96,9 @@ class OpenSSLCrypto(object):
     
     :param key：加密所用的密码
     
-    :param iv:初始向量
+    :param iv: 初始向量
     
-    :param op:加密或者加密操作
+    :param op: 加密或者加密操作
     """
         self._ctx = None
         if not loaded:
@@ -125,9 +125,9 @@ class OpenSSLCrypto(object):
         
         添加加密数据
         
-        :param data:加密数据
+        :param data: 加密数据
         
-        :return:加密后的数据
+        :return: 加密后的数据
         """
         global buf_size, buf
         cipher_out_len = c_long(0)
@@ -191,7 +191,7 @@ def run_method(method):
     
     执行加密方法
     
-    :param method:加密方法名称
+    :param method: 加密方法名称
     """
     cipher = OpenSSLCrypto(method, b'k' * 32, b'i' * 16, 1)
     decipher = OpenSSLCrypto(method, b'k' * 32, b'i' * 16, 0)
