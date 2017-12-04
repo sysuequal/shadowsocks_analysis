@@ -34,7 +34,18 @@ STAT_SEND_LIMIT = 100
 
 class Manager(object):
 
+    """
+    管理服务端端口
+    """
+    
     def __init__(self, config):
+
+        """
+        初始化Manager的配置参数，进入循环事件
+
+        :param config: 配置信息
+        """
+
         self._config = config
         self._relays = {}  # (tcprelay, udprelay)
         self._loop = eventloop.EventLoop()
@@ -78,6 +89,15 @@ class Manager(object):
             self.add_port(a_config)
 
     def add_port(self, config):
+
+        """
+        添加服务端口，并保持只有一个服务端，同时监听tcp和udp的数据包
+
+        :param config: 配置信息
+
+        :return: 如果已存在服务端则返回
+        """
+
         port = int(config['server_port'])
         servers = self._relays.get(port, None)
         if servers:
@@ -94,6 +114,15 @@ class Manager(object):
         self._relays[port] = (t, u)
 
     def remove_port(self, config):
+
+        """
+        删除服务端口，并结束端口监听
+
+        :param config: 配置信息
+
+        :return: 无
+        """
+
         port = int(config['server_port'])
         servers = self._relays.get(port, None)
         if servers:
@@ -107,6 +136,19 @@ class Manager(object):
                                                          port))
 
     def handle_event(self, sock, fd, event):
+
+        """
+        处理事件，根据端口号读取监听到的数据，从中读取控制指令，更新配置信息，处理相应的控制指令
+
+        :param sock: 监听到信息的端口号
+
+        :param fd: 文件描述符
+
+        :param event: 事件
+
+        :return:
+        """
+
         if sock == self._control_socket and event == eventloop.POLL_IN:
             data, self._control_client_addr = sock.recvfrom(BUF_SIZE)
             parsed = self._parse_command(data)
@@ -131,6 +173,15 @@ class Manager(object):
                         logging.error('unknown command %s', command)
 
     def _parse_command(self, data):
+
+        """
+        从接收数据中获取控制指令命令和配置信息
+
+        :param data: 包含控制指令和配置信息的数据
+
+        :return: 如果数据长度少于2，直接返回原数据；如果数据长度等于2，返回command和config
+        """
+
         # commands:
         # add: {"server_port": 8000, "password": "foobar"}
         # remove: {"server_port": 8000"}
@@ -147,9 +198,27 @@ class Manager(object):
             return None
 
     def stat_callback(self, port, data_len):
+
+        """
+        统计监听得到的数据长度（或者数据量）
+
+        :param port: 监听端口
+
+        :param data_len: 监听得到的数据长度
+
+        :return: 无
+        """
+
         self._statistics[port] += data_len
 
     def handle_periodic(self):
+
+        """
+        当统计发送数据量到达限制后，发送数据
+
+        :return: 无
+        """
+
         r = {}
         i = 0
 
@@ -171,6 +240,15 @@ class Manager(object):
         self._statistics.clear()
 
     def _send_control_data(self, data):
+
+        """
+        向客户端发送数据
+
+        :param data: 发送数据
+
+        :return: 如果出现错误，退出发送
+        """
+
         if self._control_client_addr:
             try:
                 self._control_socket.sendto(data, self._control_client_addr)
@@ -185,10 +263,24 @@ class Manager(object):
                         traceback.print_exc()
 
     def run(self):
+
+        """
+        运行端口管理程序
+
+        :return: 无
+        """
+
         self._loop.run()
 
 
 def run(config):
+
+    """
+    传入配置参数，运行端口管理程序
+
+    :return: 无
+    """
+    
     Manager(config).run()
 
 

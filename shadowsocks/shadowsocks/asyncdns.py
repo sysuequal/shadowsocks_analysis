@@ -343,6 +343,7 @@ class DNSResolver(object):
         self._hostname_status = {}
 
         # dns解析服务和回调的对应关系，可能出现一个host解析请求对应多个回调的情况，当host请求解析有结果了，回调所有对应的回调。
+        # 回调函数的参数格式为callback((hostname,ip),error=None)
         self._hostname_to_cb = {}
         self._cb_to_hostname = {}
         self._cache = lru_cache.LRUCache(timeout=300) # dns解析结果缓存
@@ -421,6 +422,17 @@ class DNSResolver(object):
         loop.add_periodic(self.handle_periodic)
 
     def _call_callback(self, hostname, ip, error=None):
+        """
+        该方法主要是调用该域名对应的所有的回调函数。
+
+        :param hostname: 一个域名字符串。
+
+        :param ip: 该域名字符串对应的ip地址。
+
+        :param error: 解析域名时候发生的错误。
+
+        :return: None。
+        """
         callbacks = self._hostname_to_cb.get(hostname, [])
         for callback in callbacks:
             if callback in self._cb_to_hostname:
@@ -436,6 +448,13 @@ class DNSResolver(object):
             del self._hostname_status[hostname]
 
     def _handle_data(self, data):
+        """
+        该方法主要是处理DNS请求返回的数据。
+
+        :param data: DNS请求与返回的数据。
+
+        :return: None。
+        """
         response = parse_response(data)
         if response and response.hostname:
             hostname = response.hostname
@@ -446,11 +465,11 @@ class DNSResolver(object):
                     ip = answer[0]
                     break
             if not ip and self._hostname_status.get(hostname, STATUS_IPV6) \
-                    == STATUS_IPV4:
+                    == STATUS_IPV4: # 若请求ipv4失败，则请求ipv6
                 self._hostname_status[hostname] = STATUS_IPV6
                 self._send_req(hostname, QTYPE_AAAA)
             else:
-                if ip:
+                if ip: # 若查询成功，则执行相应的回调
                     self._cache[hostname] = ip
                     self._call_callback(hostname, ip)
                 elif self._hostname_status.get(hostname, None) == STATUS_IPV6:
@@ -460,6 +479,17 @@ class DNSResolver(object):
                             break
 
     def handle_event(self, sock, fd, event):
+        """
+        该方法主要是处理DNS请求得到应答以后的事件。
+
+        :param sock: 本次DNS请求的套接字对象。
+
+        :param fd: 套接字标识符。
+
+        :param event: 事件类型，如POLL_IN和POLL_OUT。
+
+        :return: None。
+        """
         if sock != self._sock:
             return
         if event & eventloop.POLL_ERR:
@@ -473,15 +503,27 @@ class DNSResolver(object):
             self._loop.add(self._sock, eventloop.POLL_IN, self)
         else:
             data, addr = sock.recvfrom(1024)
-            if addr[0] not in self._servers:
+            if addr[0] not in self._servers: # 防止DNS劫持或者DNS污染。
                 logging.warn('received a packet other than our dns')
                 return
             self._handle_data(data)
 
     def handle_periodic(self):
-        self._cache.sweep()
+        """
+        定时清除DNS缓存。
+
+        :return: None。
+        """
+        self._cache.sweep() # 在eventloop.py中的TIME_PRECISION定义每隔10秒清理一下缓冲
 
     def remove_callback(self, callback):
+        """
+        移除回调函数。
+
+        :param callback: 回调函数。
+
+        :return: None。
+        """
         hostname = self._cb_to_hostname.get(callback)
         if hostname:
             del self._cb_to_hostname[callback]
@@ -494,6 +536,15 @@ class DNSResolver(object):
                         del self._hostname_status[hostname]
 
     def _send_req(self, hostname, qtype):
+        """
+        向DNS服务器发送DNS解析请求。
+
+        :param hostname: 一个域名字符串。
+
+        :param qtype: 查询的地址类型。
+
+        :return: None。
+        """
         req = build_request(hostname, qtype)
         for server in self._servers:
             logging.debug('resolving %s with type %d using server %s',
@@ -501,22 +552,31 @@ class DNSResolver(object):
             self._sock.sendto(req, (server, 53))
 
     def resolve(self, hostname, callback):
-        if type(hostname) != bytes:
+        """
+        解析域名并执行相应的回调函数。
+
+        :param hostname: 一个域名字符串。
+
+        :param callback: 该域名对应的回调函数。回调函数格式为callback((hostname, ip), error=None)。
+
+        :return: None。
+        """
+        if type(hostname) != bytes: # string转bytes
             hostname = hostname.encode('utf8')
-        if not hostname:
+        if not hostname: # 域名为空
             callback(None, Exception('empty hostname'))
-        elif common.is_ip(hostname):
+        elif common.is_ip(hostname): # 若本身已经是ip地址了
             callback((hostname, hostname), None)
-        elif hostname in self._hosts:
+        elif hostname in self._hosts: # 若系统的hosts文件里面已经存在了映射
             logging.debug('hit hosts: %s', hostname)
             ip = self._hosts[hostname]
             callback((hostname, ip), None)
-        elif hostname in self._cache:
+        elif hostname in self._cache: # 若缓存里面存有域名解析的结果
             logging.debug('hit cache: %s', hostname)
             ip = self._cache[hostname]
             callback((hostname, ip), None)
         else:
-            if not is_valid_hostname(hostname):
+            if not is_valid_hostname(hostname): # 若域名格式不合法。
                 callback(None, Exception('invalid hostname: %s' % hostname))
                 return
             arr = self._hostname_to_cb.get(hostname, None)
@@ -531,6 +591,11 @@ class DNSResolver(object):
                 self._send_req(hostname, QTYPE_A)
 
     def close(self):
+        """
+        关闭socket请求。
+
+        :return: None。
+        """
         if self._sock:
             if self._loop:
                 self._loop.remove_periodic(self.handle_periodic)
