@@ -74,9 +74,9 @@ class SodiumCrypto(object):
     
     :param key：加密所用的密码
     
-    :param iv:初始向量
+    :param iv: 初始向量
     
-    :param op:加密或者加密操作
+    :param op: 加密或者加密操作
     """
         if not loaded:
             load_libsodium()
@@ -98,9 +98,9 @@ class SodiumCrypto(object):
         
         上传加密数据
         
-        :param data:加密的数据
+        :param data: 加密的数据
         
-        :return:加密后的数据
+        :return: 加密后的数据
         """
         global buf_size, buf
         l = len(data)
