@@ -34,6 +34,10 @@ BLOCK_SIZE = 64
 
 
 def load_libsodium():
+    """
+    
+    加载sodium
+    """
     global loaded, libsodium, buf
 
     libsodium = util.find_library('sodium', 'crypto_stream_salsa20_xor_ic',
@@ -57,7 +61,23 @@ def load_libsodium():
 
 
 class SodiumCrypto(object):
+    """
+    
+    sodium加密算法类
+    """
     def __init__(self, cipher_name, key, iv, op):
+    """
+    
+    初始函数
+    
+    :param cipher_name：算法名字
+    
+    :param key：加密所用的密码
+    
+    :param iv: 初始向量
+    
+    :param op: 加密或者加密操作
+    """
         if not loaded:
             load_libsodium()
         self.key = key
@@ -74,6 +94,14 @@ class SodiumCrypto(object):
         self.counter = 0
 
     def update(self, data):
+        """
+        
+        上传加密数据
+        
+        :param data: 加密的数据
+        
+        :return: 加密后的数据
+        """
         global buf_size, buf
         l = len(data)
 
