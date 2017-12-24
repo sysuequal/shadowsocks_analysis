@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>4</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>336</x>
+      <y>316</y>
+      <w>84</w>
+      <h>116</h>
+    </coordinates>
+    <panel_attributes>TCPRelay
+--
+- config
+- closed
+- dns_resolver
+- fd_to_handlers
+- eventloop
+- listen
+- server_socket
+- stat_callback
+- timeouts
+--
+- sweep_timeout()
++ add_to_loop()
++ close()
++ handle_event()
++ handle_periodic()
++ remove_handler()
++ update_activity()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>548</x>
+      <y>288</y>
+      <w>88</w>
+      <h>216</h>
+    </coordinates>
+    <panel_attributes>TCPRelayHandler
+--
+- client_address
+- config
+- data_to_write_to_local
+- data_to_write_to_remote
+- dns_resolver
+- downstream_status
+- encryptor
+- fd_to_handlers
+- local_scok
+- loop
+- last_activity
+- remote_sock
+- remote_address
+- server
+- stage
+- upstream_status
+--
+- create_remote_socket()
+- get_a_server()
+- handle_stage_addr()
+- handle_stage_connecting()
+- handle_dns_resolved()
+- on_local_read()
+- on_local_write()
+- on_remote_read()
+- on_remote_write()
+- update_activity()
+- update_stream()
+- write_to_sock()
++ handle_event()
++ remote_address()
++ destroy()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>336</x>
+      <y>24</y>
+      <w>96</w>
+      <h>52</h>
+    </coordinates>
+    <panel_attributes>DNSResolver
+--
+
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>456</x>
+      <y>156</y>
+      <w>96</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>Eventloop
+--
+
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>416</x>
+      <y>72</y>
+      <w>172</w>
+      <h>224</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>410.0;540.0;410.0;90.0;10.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>536</x>
+      <y>216</y>
+      <w>36</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>70.0;180.0;70.0;60.0;10.0;60.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>568</x>
+      <y>24</y>
+      <w>84</w>
+      <h>68</h>
+    </coordinates>
+    <panel_attributes>Encryptor
+--
+
+--
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>356</x>
+      <y>72</y>
+      <w>12</w>
+      <h>252</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1
+</panel_attributes>
+    <additional_attributes>10.0;610.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>392</x>
+      <y>216</y>
+      <w>112</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;250.0;10.0;60.0;260.0;60.0;260.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>416</x>
+      <y>380</y>
+      <w>140</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;330.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>608</x>
+      <y>88</y>
+      <w>12</w>
+      <h>208</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;500.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>
